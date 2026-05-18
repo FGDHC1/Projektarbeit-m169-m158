@@ -1,6 +1,8 @@
 #!/bin/bash
-
 set -e
+
+#evtl noch den dump selbst erstellen?
+#sudo mysqldump -u root -p moodle > dump.sql
 
 MOODLEDATA=/tmp/moodledata
 mkdir -p $MOODLEDATA
@@ -51,3 +53,13 @@ rm -rf $MOODLEDATA
 rm -rf /tmp/moodle 2>/dev/null || true
 
 echo "Fertig"
+
+#sudo systemctl stop apache2
+#hier noch port von apache ändern
+#und noch den banner irgendwie erscheinen lassen
+
+#sudo chown -R 33:33 ~/Docker/volumes/moodle
+#docker compose up -d mariadb_158
+#docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
+#docker compose up -d moodle_158
+#http://localhost/admin und durchklicken
