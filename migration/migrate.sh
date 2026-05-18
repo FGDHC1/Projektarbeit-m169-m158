@@ -4,6 +4,8 @@ set -e
 #evtl noch den dump selbst erstellen?
 #sudo mysqldump -u root -p moodle > dump.sql
 
+#vielleiht auch noh einfach config und dump ins /tmp/migration machen.
+
 MOODLEDATA=/tmp/moodledata
 mkdir -p $MOODLEDATA
 chmod 777 $MOODLEDATA
