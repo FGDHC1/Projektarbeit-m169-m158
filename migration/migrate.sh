@@ -27,6 +27,7 @@ upgrade() {
   echo "Upgrade auf Moodle $VERSION..."
   curl -sL $URL | tar -xz -C /tmp/
   cp ./config.php /tmp/moodle/config.php
+  chmod -R 777 /tmp/moodle
   docker run --rm --network fadenet_migration \
     -v /tmp/moodle:/var/www/html/moodle \
     -v $MOODLEDATA:/var/moodledata \
