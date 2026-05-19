@@ -59,6 +59,7 @@ echo "Fertig"
 #sudo systemctl stop apache2
 #hier noch port von apache ändern
 #und noch den banner irgendwie erscheinen lassen
+#sudo sed -i "s|require_once(__DIR__ . '/lib/setup.php');|\$CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:70px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstuetzt<span onclick="document.getElementById('warn-banner').style.display='none'" style="position:absolute!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;cursor:pointer!important;font-size:16px!important">✕</span></div>';\nrequire_once(__DIR__ . '/lib/setup.php');|" /var/www/html/config.php
 
 #sudo chown -R 33:33 ~/Docker/volumes/moodle
 #docker compose up -d mariadb_158
