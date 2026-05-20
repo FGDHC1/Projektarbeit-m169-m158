@@ -83,8 +83,8 @@ cat > /tmp/banner.php << 'EOF'
 $CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:10px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstuetzt</div>';
 EOF
 sudo sed -i "/require_once/e cat /tmp/banner.php" /var/www/html/config.php
-#änderung da links in moodle noch auf localhost statt localhost:8080 zeigen
-sudo sed -i "s|wwwroot = 'http://localhost'|wwwroot = 'http://localhost:8080'|" /var/www/html/config.php
+#änderung da links in moodle noch auf localhost statt localhost:8080 zeigen (die vielen sternchen, da jemand nicht schön konfiguriert und mehrere leerzeichen. keinen bock das statisch zu machen)
+sudo sed -i "s|.*wwwroot.*=.*'http://localhost'.*|\$CFG->wwwroot = 'http://localhost:8080';|" /var/www/html/config.php
 
 #oprdner erstellen
 echo "Erstelle Ordner für Docker..."
@@ -131,5 +131,4 @@ sudo systemctl start apache2
 #Alles Fertig
 echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
-firefox --new-window http://localhost/admin
-firefox --new-tab http://localhost:8080
+firefox --new-window http://localhost/admin --new-tab http://localhost:8080
