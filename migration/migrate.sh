@@ -113,7 +113,7 @@ docker compose up -d mariadb_158
 
 #Auf DB warten
 echo "Warte auf MariaDB..."
-sleep 15
+sleep 30
 
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
