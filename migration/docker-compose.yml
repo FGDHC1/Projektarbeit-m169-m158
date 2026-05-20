@@ -14,7 +14,7 @@ services:
     secrets:
       - mariadb_pw
     volumes:
-      - ../volumes/mariadb:/var/lib/mysql
+      - ./data/mariadb:/var/lib/mysql
 
   moodle_158:
     image: moodlefade:latest
@@ -32,13 +32,13 @@ services:
     secrets:
       - mariadb_pw
     volumes:
-      - ../volumes/moodle:/var/moodledata
+      - ./data/moodle:/var/moodledata
     ports:
       - "80:80"
 
 secrets:
   mariadb_pw:
-    file: ../secrets/mariadb_pw.txt
+    file: ./secrets/mariadb_pw.txt
 
 networks:
   fadenet:
