@@ -111,6 +111,10 @@ cd ~/Docker/moodle_158/
 echo "Starte MariaDB Container..."
 docker compose up -d mariadb_158
 
+#Auf DB warten
+echo "Warte auf MariaDB..."
+sleep 15
+
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
 docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
