@@ -123,6 +123,10 @@ docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
 echo "Starte Moodle Container..."
 docker compose up -d moodle_158
 
+#Apache starten
+echo "Starte altes Moodle..."
+sudo systemctl start apache2
+
 #Alles Fertig
 echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
