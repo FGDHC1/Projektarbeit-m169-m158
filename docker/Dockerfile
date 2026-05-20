@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y apache2 \
     && apt-get clean
 
 # Moodle installieren
-RUN LATEST_URL=$(curl -s https://download.moodle.org/releases/latest/ \
-        | grep -oP 'https://download\.moodle\.org/download\.php/stable\d+/moodle-latest-\d+\.tgz' \
-        | head -1) \
-    && curl -L "$LATEST_URL" -o /tmp/moodle.tgz \
-    && tar -xvf /tmp/moodle.tgz -C /var/www/html/ \
+RUN curl -s https://download.moodle.org/releases/latest/ \
+    | grep -o 'download\.php/direct/stable[0-9]*/moodle-latest-[0-9]*\.tgz' \
+    | head -1 \
+    | xargs -I {} curl -fSL "https://download.moodle.org/{}" -o /tmp/moodle.tgz \
+    && tar -xf /tmp/moodle.tgz -C /var/www/html/ \
     && rm /tmp/moodle.tgz
 
 # Datenverzeichnis erstellen
@@ -26,8 +26,7 @@ RUN mkdir -p /var/moodledata \
 RUN rm -f /var/www/html/index.html
 
 # max_input_vars erhöhen
-RUN PHP_VER=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;') \
-    && echo 'max_input_vars = 5000' >> /etc/php/${PHP_VER}/apache2/php.ini
+RUN echo 'max_input_vars = 5000' >> /etc/php/8.3/apache2/php.ini
 
 # config.php in den Container kopieren
 COPY config.php /var/www/html/moodle/config.php
