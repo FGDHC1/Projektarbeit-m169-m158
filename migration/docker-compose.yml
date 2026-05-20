@@ -1,0 +1,45 @@
+services:
+  
+  mariadb_158:
+    image: mariadb:latest
+    container_name: mariadb_158
+    restart: always
+    networks:
+      - fadenet
+    environment:
+      MARIADB_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: fade_db
+      MARIADB_USER: fade_user
+      MARIADB_PASSWORD_FILE: /run/secrets/mariadb_pw
+    secrets:
+      - mariadb_pw
+    volumes:
+      - ../volumes/mariadb:/var/lib/mysql
+
+  moodle_158:
+    image: moodlefade:latest
+    container_name: moodle_158
+    restart: always
+    depends_on:
+      - mariadb_158
+    networks:
+      - fadenet
+    environment:
+      MOODLE_DB_HOST: mariadb_158
+      MOODLE_DB_NAME: fade_db
+      MOODLE_DB_USER: fade_user
+      MOODLE_DB_PASSWORD_FILE: /run/secrets/mariadb_pw
+    secrets:
+      - mariadb_pw
+    volumes:
+      - ../volumes/moodle:/var/moodledata
+    ports:
+      - "80:80"
+
+secrets:
+  mariadb_pw:
+    file: ../secrets/mariadb_pw.txt
+
+networks:
+  fadenet:
+    driver: bridge

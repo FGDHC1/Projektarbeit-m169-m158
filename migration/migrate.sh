@@ -1,17 +1,26 @@
 #!/bin/bash
 set -e
 
-#evtl noch den dump selbst erstellen?
-#sudo mysqldump -u root -p moodle > dump.sql
+#Folgende Dateien müssen so im verzeichnis sein, ich empfehle alle dateien im Home verzeichnis zu haben und dieses script da auszuführen:
+#.
+#|-- migrate.sh
+#|-- config.php
+#|-- config_migration.php
+#|-- docker-compose.yml
+#└-- Dockerfile
 
-#vielleiht auch noh einfach config und dump ins /tmp/migration machen.
+#evtl noch den dump selbst erstellen?
+echo "Erstelle Dump..."
+sudo mysqldump -u root -p moodle > dump.sql
 
 MOODLEDATA=/tmp/moodledata
 mkdir -p $MOODLEDATA
 chmod 777 $MOODLEDATA
 
+echo "Erstelle Docker Netzwerk..."
 docker network create fadenet_migration 2>/dev/null || true
 
+echo "Starte MariaDB_migration Container..."
 docker rm -f mariadb_migration 2>/dev/null || true
 docker run -d --name mariadb_migration --network fadenet_migration \
   -e MARIADB_ROOT_PASSWORD=1 \
@@ -30,7 +39,7 @@ upgrade() {
   local VERSION=$1 PHP=$2 URL=$3
   echo "Upgrade auf Moodle $VERSION..."
   curl -sL $URL | tar -xz -C /tmp/
-  cp ./config.php /tmp/moodle/config.php
+  cp ./config_migration.php /tmp/moodle/config.php
   chmod -R 777 /tmp/moodle
   docker run --rm --network fadenet_migration \
     -v /tmp/moodle:/var/www/html/moodle \
@@ -47,22 +56,59 @@ upgrade() {
 upgrade "4.1" "8.0" "https://download.moodle.org/download.php/direct/stable401/moodle-latest-401.tgz"
 upgrade "4.4" "8.1" "https://download.moodle.org/download.php/direct/stable404/moodle-latest-404.tgz"
 
+echo "Exportiere migrierten Dump..."
 docker exec mariadb_migration mysqldump -uroot -p1 fade_db > ./dump_migriert.sql
 
+echo "Bereinige Migration..."
 docker stop mariadb_migration && docker rm mariadb_migration
 docker network rm fadenet_migration 2>/dev/null || true
 rm -rf $MOODLEDATA
 rm -rf /tmp/moodle 2>/dev/null || true
 
-echo "Fertig"
+echo "Migration Fertig"
 
-#sudo systemctl stop apache2
+# Apache stoppen
+echo "Stoppe Apache..."
+sudo systemctl stop apache2
+
 #hier noch port von apache ändern
-#und noch den banner irgendwie erscheinen lassen
-#sudo sed -i "s|require_once(__DIR__ . '/lib/setup.php');|\$CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:70px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstuetzt<span onclick="document.getElementById('warn-banner').style.display='none'" style="position:absolute!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;cursor:pointer!important;font-size:16px!important">✕</span></div>';\nrequire_once(__DIR__ . '/lib/setup.php');|" /var/www/html/config.php
+#Bare metal install auf port 8080 wechseln
+echo "Ändere Apache Port auf 8080..."
+sudo sed -i "s/Listen 80/Listen 8080/" /etc/apache2/ports.conf
 
-#sudo chown -R 33:33 ~/Docker/volumes/moodle
-#docker compose up -d mariadb_158
-#docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
-#docker compose up -d moodle_158
+#und noch den banner irgendwie erscheinen lassen
+echo "Füge Warnbanner hinzu..."
+sudo sed -i "s|require_once(__DIR__ . '/lib/setup.php');|\$CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:70px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstuetzt<span onclick="document.getElementById('warn-banner').style.display='none'" style="position:absolute!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;cursor:pointer!important;font-size:16px!important">✕</span></div>';\nrequire_once(__DIR__ . '/lib/setup.php');|" /var/www/html/config.php
+
+#oprdner erstellen
+echo "Erstelle Ordner für Docker..."
+mkdir -p ~/Docker/moodle_158/data
+
+#docker compose dateien hineinkopieren
+echo "Kopiere Docker Dateien..."
+cp ./Dockerfile ./docker-compose.yml ./config.php ~/Docker/moodle_158/
+
+#Dateirechte setzen
+echo "Setze Dateirechte..."
+sudo chown -R 33:33 ~/Docker/moodle_158/data
+
+#Docker Image bauen
+echo "Baue Docker Image..."
+docker build -t moodlefade:latest ~/Docker/moodle_158/
+
+#DB starten
+echo "Starte MariaDB Container..."
+docker compose up -d mariadb_158
+
+#Dump Importieren
+echo "Importiere migrierten Dump in MariaDB Container..."
+docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
+
+#Moodle starten
+echo "Starte Moodle Container..."
+docker compose up -d moodle_158
+
+#Alles Fertig
+echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
+firefox http://localhost/admin
