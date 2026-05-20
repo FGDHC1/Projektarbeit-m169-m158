@@ -96,11 +96,6 @@ echo "Kopiere Docker Dateien..."
 cp ./Dockerfile ./docker-compose.yml ./config.php ~/Docker/moodle_158/
 cp ./mariadb_pw.txt ~/Docker/moodle_158/secrets/
 
-#Dateirechte setzen
-echo "Setze Dateirechte..."
-sudo chown -R 33:33 ~/Docker/moodle_158/data/moodle
-sudo chmod -R 755 ~/Docker/moodle_158/data/moodle
-
 #Docker Image bauen
 echo "Baue Docker Image..."
 docker build -t moodlefade:latest ~/Docker/moodle_158/
@@ -124,6 +119,11 @@ docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
 echo "Starte Moodle Container..."
 docker compose up -d moodle_158
 
+#Dateirechte setzen
+echo "Setze Dateirechte..."
+sudo chown -R 33:33 ~/Docker/moodle_158/data/moodle
+sudo chmod -R 755 ~/Docker/moodle_158/data/moodle
+
 #Apache starten
 echo "Starte altes Moodle..."
 sudo systemctl start apache2
@@ -131,4 +131,5 @@ sudo systemctl start apache2
 #Alles Fertig
 echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
-firefox http://localhost/admin
+firefox --new-window http://localhost/admin
+firefox --new-tab http://localhost:8080
