@@ -104,6 +104,9 @@ sudo chown -R 33:33 ~/Docker/moodle_158/data
 echo "Baue Docker Image..."
 docker build -t moodlefade:latest ~/Docker/moodle_158/
 
+#Directory wechseln
+cd ~/Docker/moodle_158/
+
 #DB starten
 echo "Starte MariaDB Container..."
 docker compose up -d mariadb_158
