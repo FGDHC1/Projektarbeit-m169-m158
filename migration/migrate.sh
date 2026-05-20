@@ -5,9 +5,12 @@ set -e
 #.
 #|-- migrate.sh
 #|-- config.php
+#|-- mariadb_pw.txt
 #|-- config_migration.php
 #|-- docker-compose.yml
 #└-- Dockerfile
+
+
 
 #evtl noch den dump selbst erstellen?
 echo "Erstelle Dump..."
