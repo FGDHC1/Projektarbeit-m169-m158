@@ -10,8 +10,6 @@ set -e
 #|-- docker-compose.yml
 #└-- Dockerfile
 
-
-
 #evtl noch den dump selbst erstellen?
 echo "Erstelle Dump..."
 sudo mysqldump -u root -p moodle > dump.sql
@@ -98,7 +96,8 @@ cp ./mariadb_pw.txt ~/Docker/moodle_158/secrets/
 
 #Dateirechte setzen
 echo "Setze Dateirechte..."
-sudo chown -R 33:33 ~/Docker/moodle_158/data
+sudo chown -R 33:33 ~/Docker/moodle_158/data/moodle
+sudo chmod -R 755 ~/Docker/moodle_158/data/moodle
 
 #Docker Image bauen
 echo "Baue Docker Image..."
