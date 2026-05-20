@@ -86,10 +86,12 @@ sudo sed -i "s|require_once(__DIR__ . '/lib/setup.php');|\$CFG->additionalhtmlto
 #oprdner erstellen
 echo "Erstelle Ordner für Docker..."
 mkdir -p ~/Docker/moodle_158/data
+mkdir -p ~/Docker/moodle_158/secrets
 
 #docker compose dateien hineinkopieren
 echo "Kopiere Docker Dateien..."
 cp ./Dockerfile ./docker-compose.yml ./config.php ~/Docker/moodle_158/
+cp ./mariadb_pw.txt ~/Docker/moodle_158/secrets/
 
 #Dateirechte setzen
 echo "Setze Dateirechte..."
