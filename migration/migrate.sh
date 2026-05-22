@@ -31,7 +31,9 @@ docker run -d --name mariadb_migration --network fadenet_migration \
   mariadb:10.6
 
 echo "Warte auf MariaDB..."
-sleep 30
+until docker exec mariadb_migration mysql -uroot -p1 -e "SELECT 1" &>/dev/null; do
+  sleep 1
+done
 
 echo "Importiere Dump..."
 docker exec -i mariadb_migration mysql -uroot -p1 fade_db < ./dump.sql
@@ -109,7 +111,9 @@ docker compose up -d mariadb_158
 
 #Auf DB warten
 echo "Warte auf MariaDB..."
-sleep 30
+until docker exec mariadb_158 mysql -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" -e "SELECT 1" &>/dev/null; do
+  sleep 1
+done
 
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
