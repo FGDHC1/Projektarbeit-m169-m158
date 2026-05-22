@@ -12,7 +12,7 @@ set -e
 
 #evtl noch den dump selbst erstellen?
 echo "Erstelle Dump..."
-sudo mysqldump -u root -p moodle > dump.sql
+sudo mysqldump -u root moodle > dump.sql
 
 MOODLEDATA=/tmp/moodledata
 mkdir -p $MOODLEDATA
