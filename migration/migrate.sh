@@ -93,8 +93,8 @@ mkdir -p ~/Docker/moodle_158/secrets
 
 #docker compose dateien hineinkopieren
 echo "Kopiere Docker Dateien..."
-cp ./Dockerfile ./docker-compose.yml ./config.php ~/Docker/moodle_158/
-cp ./mariadb_pw.txt ~/Docker/moodle_158/secrets/
+mv ./Dockerfile ./docker-compose.yml ./config.php ~/Docker/moodle_158/
+mv ./mariadb_pw.txt ~/Docker/moodle_158/secrets/
 
 #Docker Image bauen
 echo "Baue Docker Image..."
