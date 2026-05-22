@@ -80,7 +80,7 @@ sudo sed -i "s/Listen 80/Listen 8080/" /etc/apache2/ports.conf
 #und noch den banner irgendwie erscheinen lassen
 echo "Füge Warnbanner hinzu..."
 cat > /tmp/banner.php << 'EOF'
-$CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:70px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstuetzt</div>';
+$CFG->additionalhtmltopofbody = '<div id="warn-banner" style="background:rgba(255,100,100,0.4)!important;color:#8b0000!important;text-align:center!important;padding:10px 20px!important;position:relative!important;z-index:9999!important;font-family:sans-serif!important;font-size:14px!important;font-weight:bold!important;border:2px solid #8b0000!important;border-radius:8px!important;margin:70px 70px -50px 70px!important">⚠ Diese Moodle-Version ist veraltet und wird nicht mehr unterstützt<span onclick="document.getElementById('warn-banner').style.display='none'" style="position:absolute!important;right:15px!important;top:50%!important;transform:translateY(-50%)!important;cursor:pointer!important;font-size:16px!important">✕</span></div>';
 EOF
 sudo sed -i "/require_once/e cat /tmp/banner.php" /var/www/html/config.php
 #änderung da links in moodle noch auf localhost statt localhost:8080 zeigen (die vielen sternchen, da jemand nicht schön konfiguriert und mehrere leerzeichen. keinen bock das statisch zu machen)
