@@ -131,4 +131,4 @@ sudo systemctl start apache2
 #Alles Fertig
 echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
-firefox --new-window http://localhost/admin --new-tab http://localhost:8080
+nohup firefox --new-window http://localhost:8080 --new-tab http://localhost/admin &
