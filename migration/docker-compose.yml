@@ -7,7 +7,7 @@ services:
     networks:
       - fadenet
     environment:
-      MARIADB_ROOT_PASSWORD: "1"
+      MARIADB_ROOT_PASSWORD: "1" # Deon du lustige das isch ned random root pw XD
       MARIADB_DATABASE: fade_db
       MARIADB_USER: fade_user
       MARIADB_PASSWORD_FILE: /run/secrets/mariadb_pw
