@@ -130,7 +130,7 @@ sleep 30
 
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
-docker exec -i mariadb_158 mariadb -uroot -p1 fade_db < ~/dump_migriert.sql
+docker exec -i mariadb_158 mariadb -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" fade_db < ~/dump_migriert.sql
 
 #Moodle starten
 echo "Starte Moodle Container..."
