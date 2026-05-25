@@ -150,5 +150,7 @@ echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Do
 #http://localhost/admin und durchklicken
 nohup firefox --new-window http://localhost:8080 --new-tab http://localhost/admin &
 
+#SQL cleanup
+echo "SQL Cleanup..."
 rm ~/dump.sql
 rm ~/dump_migriert.sql
