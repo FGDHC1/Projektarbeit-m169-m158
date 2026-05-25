@@ -149,3 +149,6 @@ sudo systemctl start apache2
 echo "Moodle ist jetzt unter http://localhost:80 erreichbar (Apache auf 8080, Docker auf 80)!"
 #http://localhost/admin und durchklicken
 nohup firefox --new-window http://localhost:8080 --new-tab http://localhost/admin &
+
+rm ~/dump.sql
+rm ~/dump_migriert.sql
