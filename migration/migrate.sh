@@ -10,6 +10,15 @@ set -e
 #|-- docker-compose.yml
 #└-- Dockerfile
 
+echo "Passwortfile check..."
+if [ ! -f "./mariadb_pw.txt" ]; then
+    echo "Fehler: Passwort-File './mariadb_pw.txt' fehlt."
+    read -p "MariaDB Passwort für DB-User eingeben: " password
+    touch mariadb_pw.txt
+    echo "$password" > "./mariadb_pw.txt"
+    echo "Passwort wurde in './mariadb_pw.txt' gespeichert."
+fi
+
 #evtl noch den dump selbst erstellen?
 echo "Erstelle Dump..."
 sudo mysqldump -u root moodle > dump.sql
@@ -112,9 +121,12 @@ docker compose up -d mariadb_158
 
 #Auf DB warten
 echo "Warte auf MariaDB..."
-until docker exec mariadb_158 mysql -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" -e "SELECT 1" &>/dev/null; do
-  sleep 1
-done
+sleep 30
+
+#lowkenuenly kein bock zum fixxen desswegen einfach wieder sleep 30
+#until docker exec mariadb_158 mysql -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" -e "SELECT 1" &>/dev/null; do
+#  sleep 1
+#done
 
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
