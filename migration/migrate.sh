@@ -19,7 +19,7 @@ if [ ! -f "./mariadb_pw.txt" ]; then
     echo "Passwort wurde in './mariadb_pw.txt' gespeichert."
 fi
 
-#evtl noch den dump selbst erstellen?
+
 echo "Erstelle Dump..."
 sudo mysqldump -u root moodle > dump.sql
 
@@ -37,15 +37,15 @@ docker run -d --name mariadb_migration --network fadenet_migration \
   -e MARIADB_DATABASE=fade_db \
   -e MARIADB_USER=fade_user \
   -e MARIADB_PASSWORD=fade_pw \
-  mariadb:10.6
+  mariadb:latest
 
 echo "Warte auf MariaDB..."
-until docker exec mariadb_migration mysql -uroot -p1 -e "SELECT 1" &>/dev/null; do
+until docker exec mariadb_migration mariadb -uroot -p1 -e "SELECT 1" &>/dev/null; do
   sleep 1
 done
 
 echo "Importiere Dump..."
-docker exec -i mariadb_migration mysql -uroot -p1 fade_db < ./dump.sql
+docker exec -i mariadb_migration mariadb -uroot -p1 fade_db < ./dump.sql
 
 upgrade() {
   local VERSION=$1 PHP=$2 URL=$3
@@ -69,7 +69,7 @@ upgrade "4.1" "8.0" "https://download.moodle.org/download.php/direct/stable401/m
 upgrade "4.4" "8.1" "https://download.moodle.org/download.php/direct/stable404/moodle-latest-404.tgz"
 
 echo "Exportiere migrierten Dump..."
-docker exec mariadb_migration mysqldump -uroot -p1 fade_db > ./dump_migriert.sql
+docker exec mariadb_migration mariadb-dump -uroot -p1 fade_db > ./dump_migriert.sql
 
 echo "Bereinige Migration..."
 docker stop mariadb_migration && docker rm mariadb_migration
@@ -83,7 +83,6 @@ echo "Migration Fertig"
 echo "Stoppe Apache..."
 sudo systemctl stop apache2
 
-#hier noch port von apache ändern
 #Bare metal install auf port 8080 wechseln
 echo "Ändere Apache Port auf 8080..."
 sudo sed -i "s/Listen 80/Listen 8080/" /etc/apache2/ports.conf
@@ -121,12 +120,9 @@ docker compose up -d mariadb_158
 
 #Auf DB warten
 echo "Warte auf MariaDB..."
-sleep 30
-
-#lowkenuenly kein bock zum fixxen desswegen einfach wieder sleep 30
-#until docker exec mariadb_158 mysql -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" -e "SELECT 1" &>/dev/null; do
-#  sleep 1
-#done
+until docker exec -i mariadb_158 mariadb -ufade_user -p"$(cat ~/Docker/moodle_158/secrets/mariadb_pw.txt)" -e "SELECT 1" &>/dev/null; do
+  sleep 1
+done
 
 #Dump Importieren
 echo "Importiere migrierten Dump in MariaDB Container..."
